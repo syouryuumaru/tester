@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { ServerInfo, ServerTestState, TestStatus } from '../types.js'; // <-- Perubahan di sini
-import Spinner from './Spinner.js'; // <-- Perubahan di sini
+import { ServerInfo, ServerTestState, TestStatus } from '../types.js';
+import Spinner from './Spinner.js';
 
 interface ServerCardProps {
   serverInfo: ServerInfo;

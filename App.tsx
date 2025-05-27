@@ -1,10 +1,10 @@
 
 import React, { useState, useCallback } from 'react';
-import { ServerInfo, AllServersTestState, ServerTestState, TestStatus } from './types.js'; // <-- Perubahan di sini
-import { SERVERS } from './constants.js'; // <-- Perubahan di sini
-import { measureLatency, measureDownloadSpeed, measureUploadSpeed } from './services/speedTestService.js'; // <-- Perubahan di sini
-import ServerCard from './components/ServerCard.js'; // <-- Perubahan di sini
-import Spinner from './components/Spinner.js'; // <-- Perubahan di sini
+import { ServerInfo, AllServersTestState, ServerTestState, TestStatus } from './types.js'; 
+import { SERVERS } from './constants.js'; 
+import { measureLatency, measureDownloadSpeed, measureUploadSpeed } from './services/speedTestService.js'; 
+import ServerCard from './components/ServerCard.js'; 
+import Spinner from './components/Spinner.js'; 
 
 const initialServerStates = (): AllServersTestState => {
   return SERVERS.reduce((acc, server) => {
@@ -30,7 +30,7 @@ const App: React.FC = () => {
 
 
   const updateServerState = useCallback((serverId: string, updates: Partial<ServerTestState>) => {
-    setServerStates((prevStates: AllServersTestState) => ({ // Eksplisit tipe untuk prevStates
+    setServerStates((prevStates: AllServersTestState) => ({ 
       ...prevStates,
       [serverId]: {
         ...prevStates[serverId],
@@ -44,13 +44,11 @@ const App: React.FC = () => {
     setUserPublicIp(null);
     setIpFetchError(null);
     try {
-      // Changed IP service URL back to api.ipify.org
       const response = await fetch('https://api.ipify.org?format=json', {
         method: 'GET',
-        cache: 'no-cache', // Ensure a fresh request
+        cache: 'no-cache', 
       });
       if (!response.ok) {
-        // Check for specific error text that might indicate a CORS preflight failure or similar
         const responseText = await response.text().catch(() => "Could not read response body.");
         throw new Error(`API request failed with status ${response.status} ${response.statusText}. Response: ${responseText.substring(0,100)}`);
       }
@@ -90,7 +88,7 @@ const App: React.FC = () => {
 
     // Download Test
     setCurrentGlobalTestStep(`Download - ${server.name}`);
-    updateServerState(server.id, { status: 'testing-download', downloadSpeed: 0 }); // Show 0 initially
+    updateServerState(server.id, { status: 'testing-download', downloadSpeed: 0 }); 
     try {
       const downloadSpeed = await measureDownloadSpeed(
         server.downloadTestUrl,
@@ -98,23 +96,24 @@ const App: React.FC = () => {
           updateServerState(server.id, { downloadSpeed: currentSpeedMbps });
         }
       );
-      updateServerState(server.id, { downloadSpeed }); // Set final speed
+      updateServerState(server.id, { downloadSpeed }); 
     } catch (error) {
       console.error(`Download test failed for ${server.name}:`, error);
       updateServerState(server.id, { status: 'error', error: 'Download test failed.' });
       throw error; 
     }
 
-    // Upload Test (Simulated with live progress)
+    // Upload Test (Actual data POST attempts)
     setCurrentGlobalTestStep(`Upload - ${server.name}`);
-    updateServerState(server.id, { status: 'testing-upload', uploadSpeed: 0 }); // Show 0 initially
+    updateServerState(server.id, { status: 'testing-upload', uploadSpeed: 0 }); 
     try {
       const uploadSpeed = await measureUploadSpeed(
-        (currentSimulatedSpeedMbps) => {
-          updateServerState(server.id, { uploadSpeed: currentSimulatedSpeedMbps });
+        server.uploadTestUrl, // Use the new uploadTestUrl
+        (currentSpeedMbps) => {
+          updateServerState(server.id, { uploadSpeed: currentSpeedMbps });
         }
       );
-      updateServerState(server.id, { uploadSpeed }); // Set final speed
+      updateServerState(server.id, { uploadSpeed }); 
     } catch (error) { 
       console.error(`Upload test failed for ${server.name}:`, error);
       updateServerState(server.id, { status: 'error', error: 'Upload test failed.' });
@@ -139,7 +138,6 @@ const App: React.FC = () => {
         await runTestForServer(server);
       } catch (e) {
         console.error(`Failed testing server ${server.name}, stopping its tests.`);
-        // runTestForServer already sets error state for the specific server
       }
     }
 
@@ -183,7 +181,6 @@ const App: React.FC = () => {
         </button>
         
         <div className="w-full max-w-4xl text-center mt-4 space-y-1 text-sm" aria-live="polite">
-          {/* IP Fetching Status/Result */}
           {isFetchingIp && <p className="text-sky-300">Fetching your IP address...</p>}
           {!isFetchingIp && userPublicIp && !ipFetchError && (
             <p className="text-slate-300" aria-label="Your Public IP Address">
@@ -211,7 +208,6 @@ const App: React.FC = () => {
             </div>
           )}
 
-          {/* Overall Test Progress - shown if not fetching IP. Can appear alongside IP error if tests proceed. */}
           {isTestingOverall && currentGlobalTestStep && !isFetchingIp && (
             <p className="text-sky-300 animate-pulse">
               {currentGlobalTestStep}
@@ -238,7 +234,8 @@ const App: React.FC = () => {
       <footer className="w-full max-w-4xl mt-12 text-center text-xs text-slate-500">
         <p>&copy; {new Date().getFullYear()} Speed Test Application. For informational purposes.</p>
         <p>
-          Download tests are performed against public file sources. Upload test is a client-side simulation.
+          Download tests are performed against public file sources. 
+          Upload tests attempt to send data to the target server; actual speed measured may be affected by server response to POST requests.
           Results indicate performance to these specific sources under current network conditions.
         </p>
       </footer>

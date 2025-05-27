@@ -45,15 +45,13 @@ const App = () => {
     setUserPublicIp(null);
     setIpFetchError(null);
     try {
-      // Changed IP service URL back to api.ipify.org
       const response = await fetch('https://api.ipify.org?format=json', {
         method: 'GET',
-        cache: 'no-cache', // Ensure a fresh request
+        cache: 'no-cache', 
       });
       if (!response.ok) {
-        // Check for specific error text that might indicate a CORS preflight failure or similar
         const responseText = await response.text().catch(() => "Could not read response body.");
-        throw new Error(`API request failed with status ${response.status} ${response.statusText}. Response: ${responseText.substring(0, 100)}`);
+        throw new Error(`API request failed with status ${response.status} ${response.statusText}. Response: ${responseText.substring(0,100)}`);
       }
       const data = await response.json();
       if (typeof data.ip !== 'string') {
@@ -67,14 +65,14 @@ const App = () => {
       } else {
         setIpFetchError(new Error("An unknown error occurred while fetching IP."));
       }
-      setUserPublicIp(null);
+      setUserPublicIp(null); 
     } finally {
       setIsFetchingIp(false);
     }
   };
 
   const runTestForServer = useCallback(async (server) => {
-    setCurrentTestServerName(server.name);
+    setCurrentTestServerName(server.name); 
     updateServerState(server.id, { status: 'pending', error: null, latency: null, downloadSpeed: null, uploadSpeed: null });
 
     // Latency Test
@@ -86,12 +84,12 @@ const App = () => {
     } catch (error) {
       console.error(`Latency test failed for ${server.name}:`, error);
       updateServerState(server.id, { status: 'error', error: 'Latency test failed.' });
-      throw error;
+      throw error; 
     }
 
     // Download Test
     setCurrentGlobalTestStep(`Download - ${server.name}`);
-    updateServerState(server.id, { status: 'testing-download', downloadSpeed: 0 }); // Show 0 initially
+    updateServerState(server.id, { status: 'testing-download', downloadSpeed: 0 }); 
     try {
       const downloadSpeed = await measureDownloadSpeed(
         server.downloadTestUrl,
@@ -99,29 +97,30 @@ const App = () => {
           updateServerState(server.id, { downloadSpeed: currentSpeedMbps });
         }
       );
-      updateServerState(server.id, { downloadSpeed }); // Set final speed
+      updateServerState(server.id, { downloadSpeed }); 
     } catch (error) {
       console.error(`Download test failed for ${server.name}:`, error);
       updateServerState(server.id, { status: 'error', error: 'Download test failed.' });
-      throw error;
+      throw error; 
     }
 
-    // Upload Test (Simulated with live progress)
+    // Upload Test (Actual data POST attempts)
     setCurrentGlobalTestStep(`Upload - ${server.name}`);
-    updateServerState(server.id, { status: 'testing-upload', uploadSpeed: 0 }); // Show 0 initially
+    updateServerState(server.id, { status: 'testing-upload', uploadSpeed: 0 }); 
     try {
       const uploadSpeed = await measureUploadSpeed(
-        (currentSimulatedSpeedMbps) => {
-          updateServerState(server.id, { uploadSpeed: currentSimulatedSpeedMbps });
+        server.uploadTestUrl, // Pass the server's uploadTestUrl
+        (currentSpeedMbps) => {
+          updateServerState(server.id, { uploadSpeed: currentSpeedMbps });
         }
       );
-      updateServerState(server.id, { uploadSpeed }); // Set final speed
-    } catch (error) {
+      updateServerState(server.id, { uploadSpeed }); 
+    } catch (error) { 
       console.error(`Upload test failed for ${server.name}:`, error);
       updateServerState(server.id, { status: 'error', error: 'Upload test failed.' });
       throw error;
     }
-
+    
     updateServerState(server.id, { status: 'completed' });
   }, [updateServerState]);
 
@@ -129,29 +128,28 @@ const App = () => {
   const startAllTests = useCallback(async () => {
     if (isTestingOverall || isFetchingIp) return;
 
-    await fetchPublicIp();
+    await fetchPublicIp(); 
 
     setIsTestingOverall(true);
-    setServerStates(initialServerStates());
-    setCurrentGlobalTestStep("Initializing tests...");
+    setServerStates(initialServerStates()); 
+    setCurrentGlobalTestStep("Initializing tests..."); 
 
     for (const server of SERVERS) {
       try {
         await runTestForServer(server);
       } catch (e) {
         console.error(`Failed testing server ${server.name}, stopping its tests.`);
-        // runTestForServer already sets error state for the specific server
       }
     }
 
     setIsTestingOverall(false);
-    setCurrentTestServerName(null);
+    setCurrentTestServerName(null); 
     setCurrentGlobalTestStep('All tests completed!');
-  }, [isTestingOverall, isFetchingIp, runTestForServer, fetchPublicIp]);
+  }, [isTestingOverall, isFetchingIp, runTestForServer, fetchPublicIp]); 
 
-  const isNetworkOrCORSFailure = ipFetchError?.message?.toLowerCase().includes('networkerror') ||
-    ipFetchError?.message?.toLowerCase().includes('failed to fetch') ||
-    ipFetchError?.message?.toLowerCase().includes('cors');
+  const isNetworkOrCORSFailure = ipFetchError?.message?.toLowerCase().includes('networkerror') || 
+                                 ipFetchError?.message?.toLowerCase().includes('failed to fetch') ||
+                                 ipFetchError?.message?.toLowerCase().includes('cors');
 
   const hasNullStatusCode = ipFetchError?.message?.toLowerCase().includes('status (null)') || ipFetchError?.message?.toLowerCase().includes('kode status: (null)');
 
@@ -215,7 +213,7 @@ const App = () => {
           className: "w-full max-w-4xl mt-12 text-center text-xs text-slate-500",
           children: [_jsxs("p", {
             children: ["© ", new Date().getFullYear(), " Speed Test Application. For informational purposes."]
-          }), _jsx("p", { children: "Download tests are performed against public file sources. Upload test is a client-side simulation. Results indicate performance to these specific sources under current network conditions." })]
+          }), _jsx("p", { children: "Download tests are performed against public file sources. Upload tests attempt to send data to the target server; actual speed measured may be affected by server response to POST requests. Results indicate performance to these specific sources under current network conditions." })]
         })]
     })
   );

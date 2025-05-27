@@ -1,8 +1,7 @@
 
-import { ServerInfo } from './types.js'; // <-- Perubahan di sini
+import { ServerInfo } from './types.js';
 
-// Using generic, publicly accessible image URLs for simulation.
-// The names and locations are updated as requested.
+// Using generic, publicly accessible image URLs for simulation/testing.
 // Actual Ookla test URLs are complex and might have CORS/TOS restrictions for direct use.
 
 export const SERVERS: ServerInfo[] = [
@@ -10,10 +9,10 @@ export const SERVERS: ServerInfo[] = [
     id: 'nexa-semarang-ookla',
     name: 'Nexa Semarang by Ookla',
     location: 'Semarang, Indonesia',
-    // Using a small, publicly accessible image for reliable latency test
     latencyTestUrl: `https://picsum.photos/seed/nexa-smg-latency/10/10`,
-    // Using a publicly accessible image for repeated downloads
     downloadTestUrl: `https://picsum.photos/seed/nexa-smg-download/200/200`,
+    // Using the same URL for upload attempts; the server will likely reject POST but we measure send attempt.
+    uploadTestUrl: `https://picsum.photos/seed/nexa-smg-upload/submit`,
   },
   {
     id: 'singtel-sg-ookla',
@@ -21,12 +20,18 @@ export const SERVERS: ServerInfo[] = [
     location: 'Singapore',
     latencyTestUrl: `https://picsum.photos/seed/singtel-sg-latency/10/10`,
     downloadTestUrl: `https://picsum.photos/seed/singtel-sg-download/200/200`,
+    uploadTestUrl: `https://picsum.photos/seed/singtel-sg-upload/submit`,
   },
 ];
 
 // Target duration for download tests
 export const TARGET_DOWNLOAD_DURATION_MS = 15000; // 15 seconds
 
-// Mocked upload size and duration for simulation
-export const MOCKED_UPLOAD_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
-export const MOCKED_UPLOAD_DURATION_MS = 15000; // Simulate 15 seconds for upload
+// Target duration for upload tests
+export const TARGET_UPLOAD_DURATION_MS = 10000; // 10 seconds for upload attempts
+
+// Size of data chunk for each upload POST request
+export const UPLOAD_CHUNK_SIZE_BYTES = 256 * 1024; // 256KB
+
+// MOCKED_UPLOAD_SIZE_BYTES is no longer primarily used for calculation but can be kept for reference or future fallback.
+export const MOCKED_UPLOAD_SIZE_BYTES = 1 * 1024 * 1024; // 1MB (Legacy, for potential simulation fallback)

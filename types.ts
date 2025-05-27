@@ -5,7 +5,7 @@ export interface ServerInfo {
   location: string;
   latencyTestUrl: string;
   downloadTestUrl: string;
-  // Upload test is typically to the same infrastructure, but we'll mock it.
+  uploadTestUrl: string; // Added for actual upload attempts
 }
 
 export interface TestScores {

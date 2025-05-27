@@ -1,5 +1,5 @@
 
-import { ServerInfo } from './types';
+import { ServerInfo } from './types.js'; // <-- Perubahan di sini
 
 // Using generic, publicly accessible image URLs for simulation.
 // The names and locations are updated as requested.

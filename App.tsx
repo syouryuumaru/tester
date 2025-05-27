@@ -1,10 +1,10 @@
 
 import React, { useState, useCallback } from 'react';
-import { ServerInfo, AllServersTestState, ServerTestState, TestStatus } from './types';
-import { SERVERS } from './constants';
-import { measureLatency, measureDownloadSpeed, measureUploadSpeed } from './services/speedTestService';
-import ServerCard from './components/ServerCard';
-import Spinner from './components/Spinner';
+import { ServerInfo, AllServersTestState, ServerTestState, TestStatus } from './types.js'; // <-- Perubahan di sini
+import { SERVERS } from './constants.js'; // <-- Perubahan di sini
+import { measureLatency, measureDownloadSpeed, measureUploadSpeed } from './services/speedTestService.js'; // <-- Perubahan di sini
+import ServerCard from './components/ServerCard.js'; // <-- Perubahan di sini
+import Spinner from './components/Spinner.js'; // <-- Perubahan di sini
 
 const initialServerStates = (): AllServersTestState => {
   return SERVERS.reduce((acc, server) => {
@@ -30,7 +30,7 @@ const App: React.FC = () => {
 
 
   const updateServerState = useCallback((serverId: string, updates: Partial<ServerTestState>) => {
-    setServerStates(prevStates => ({
+    setServerStates((prevStates: AllServersTestState) => ({ // Eksplisit tipe untuk prevStates
       ...prevStates,
       [serverId]: {
         ...prevStates[serverId],

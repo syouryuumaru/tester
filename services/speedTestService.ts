@@ -1,4 +1,4 @@
-import { MOCKED_UPLOAD_SIZE_BYTES, MOCKED_UPLOAD_DURATION_MS, TARGET_DOWNLOAD_DURATION_MS } from '../constants';
+import { MOCKED_UPLOAD_SIZE_BYTES, MOCKED_UPLOAD_DURATION_MS, TARGET_DOWNLOAD_DURATION_MS } from '../constants.js'; // <-- Perubahan di sini
 
 const CACHE_BUSTER = () => `?v=${Date.now()}&r=${Math.random()}`;
 

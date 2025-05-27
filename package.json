@@ -1,0 +1,16 @@
+{
+  "name": "my-speed-test-app",
+  "version": "0.1.0",
+  "description": "Speed Test Application for GitHub Pages",
+  "scripts": {
+    "build": "tsc",
+    "start:dev": "echo 'Run index.html with a local server that supports TS/JSX on-the-fly or after running npm run build'"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

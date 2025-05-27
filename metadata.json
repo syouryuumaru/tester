@@ -1,0 +1,5 @@
+{
+  "name": "Speed Test",
+  "description": "A web application to measure internet connection performance (latency, download, upload) to selected server locations in real-time.",
+  "requestFramePermissions": []
+}
